@@ -1,0 +1,12 @@
+# IDE files
+*.iml
+*.ipr
+*.idea
+
+# build directories
+build
+target
+out
+
+# OS files
+.DS_Store
