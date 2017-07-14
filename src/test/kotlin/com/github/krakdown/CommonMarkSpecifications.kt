@@ -31,7 +31,7 @@ class CommonMarkSpecifications : Spek({
 
     given("common-mark specifications") {
         val parser = createBlockParser()
-        val lines = load("commonmark.spec")
+        val lines = load("commonmark.testspec")
         val tests = parseTests(lines)
         for((title, markdown, html) in tests) {
             it(title) {
