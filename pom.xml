@@ -60,6 +60,7 @@
             <groupId>org.jetbrains.spek</groupId>
             <artifactId>spek-junit-platform-engine</artifactId>
             <version>1.1.2</version>
+            <scope>test</scope>
             <!--<exclusions>-->
                 <!--<exclusion>-->
                     <!--<artifactId>kotlin-stdlib</artifactId>-->
