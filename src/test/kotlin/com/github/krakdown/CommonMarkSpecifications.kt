@@ -29,7 +29,7 @@ class CommonMarkSpecifications : Spek({
         return visitor.content
     }
 
-    given("commonmark specifications") {
+    given("common-mark specifications") {
         val parser = createBlockParser()
         val lines = load("commonmark.spec")
         val tests = parseTests(lines)

@@ -2,9 +2,11 @@ package com.github.krakdown.visitors
 
 import com.github.krakdown.NodeVisitor
 import com.github.krakdown.block.node.*
-import com.github.krakdown.inline.SpanText
 
 class HtmlVisitor : NodeVisitor {
+    override fun acceptHtml(htmlNode: HtmlNode) {
+        content += htmlNode.html
+    }
 
     var content = ""
 
@@ -12,10 +14,6 @@ class HtmlVisitor : NodeVisitor {
         val nested = HtmlVisitor()
         blockQuoteNode.nodes.forEach { it.visit(nested) }
         content += "<blockquote>${nested.content}</blockquote>"
-    }
-
-    override fun acceptSpanText(spanText: SpanText) {
-        content += "<span>${spanText.text}</span>"
     }
 
     override fun acceptCodeBlock(codeBlockNode: CodeBlockNode) {
