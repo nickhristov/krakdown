@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 
 @Suppress("unused")
 @RunWith(JUnitPlatform::class)
-class InlineParserTests : Spek({
+class InlineParserSpec : Spek({
 
     given("a inline parser") {
         val parser = InlineParser()

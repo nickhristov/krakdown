@@ -12,7 +12,14 @@ import kotlin.test.assertEquals
 
 @Suppress("unused")
 @RunWith(JUnitPlatform::class)
-class CommonMarkSpecifications : Spek({
+
+/**
+ * Reads the specifications given by the commonmark.testspec file and parses that file, splitting it into individual
+ * test cases.
+ *
+ * To add a new test case, just update the data file.
+ */
+class CommonMarkSpec : Spek({
 
     fun load(filename: String) : List<String> {
         javaClass.classLoader.getResourceAsStream(filename).use {

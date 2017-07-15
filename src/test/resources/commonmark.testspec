@@ -295,16 +295,6 @@ aaa
 </code></pre>
 
 
-Example 106: Code fences (opening and closing) cannot contain internal spaces
-===================================++++++++++++++++++++++++++
-``` ```
-aaa
-
------------------------------------++++++++++++++++++++++++++
-<p><code></code>
-aaa</p>
-
-
 Example 107: Code fences (opening and closing) cannot contain internal spaces
 ===================================++++++++++++++++++++++++++
 ~~~~~~
@@ -376,26 +366,6 @@ Example 112
 ````
 -----------------------------------++++++++++++++++++++++++++
 <pre><code class="language-;"></code></pre>
-
-
-Example 113
-===================================++++++++++++++++++++++++++
-``` aa ```
-foo
-
------------------------------------++++++++++++++++++++++++++
-<p><code>aa</code>
-foo</p>
-
-
-Example 114: Closing code fences cannot have info strings
-===================================++++++++++++++++++++++++++
-```
-``` aaa
-```
------------------------------------++++++++++++++++++++++++++
-<pre><code>``` aaa
-</code></pre>
 
 
 Example 262
@@ -572,28 +542,4 @@ Example 283
 -----------------------------------++++++++++++++++++++++++++
 <ol><li><pre><code>foo
 </code></pre><p>bar</p></li></ol>
-
-
-Example 284 : here the outer list is loose, the inner list tight
-===================================++++++++++++++++++++++++++
-* foo
-  * bar
-
-  baz
------------------------------------++++++++++++++++++++++++++
-<ul><li><p>foo</p><ul><li>bar</li></ul><p>baz</p></li></ul>
-
-
-Example 285 : here the outer list is loose, the inner list tight
-===================================++++++++++++++++++++++++++
-- a
-  - b
-  - c
-
-- d
-  - e
-  - f
------------------------------------++++++++++++++++++++++++++
-<ul><li><p>a</p><ul><li>b</li><li>c</li></ul></li><li><p>d</p><ul><li>e</li><li>f</li></ul></li></ul>
-
 

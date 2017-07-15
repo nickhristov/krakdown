@@ -10,9 +10,9 @@ class TextNode(var text: String) : InlineNode() {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        other as TextNode
+        if (!( other is TextNode) ) {
+            return false
+        }
 
         if (text != other.text) return false
 

@@ -1,6 +1,7 @@
 package com.github.krakdown
 
 import com.github.krakdown.block.*
+import kotlin.Exception
 
 class BlockParser (val rules: Array<BlockRule>) {
 
@@ -37,7 +38,7 @@ class BlockParser (val rules: Array<BlockRule>) {
                 }
             }
             if (! matches) { // prevent infinite looping if no rule consumed the result
-                throw IllegalStateException("No rule matched current line: " + lines[0])
+                throw Exception("No rule matched current line: " + lines[0])
             }
         }
         return nodes

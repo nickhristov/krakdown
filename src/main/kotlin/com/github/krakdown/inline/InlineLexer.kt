@@ -100,7 +100,9 @@ class CodeTokenizer : InlineTokenizer {
                         // strip last characters and then make completing token
                         stack.push(CodeInlineToken(char, lastInlineToken.count))
 
-                        text.characters.setLength(text.characters.length - tailCodeChars)
+                        // FIXME: once setLength gets fixed in Kotlin, fix this
+//                        text.characters.setLength(text.characters.length - tailCodeChars)
+                        text.characters = StringBuilder(text.characters.subSequence(0, text.characters.length - tailCodeChars))
                     } else {
                         text.characters.append(char)
                     }
@@ -216,7 +218,11 @@ class LinkTokenizer : InlineTokenizer {
                 val label = lastToken.characters.subSequence(startBlockIdx, endBlockIdx)
                 val uri = lastToken.characters.subSequence(startParenIdx, lastToken.characters.length)
                 if (labelValidCharacters(label) && uriValidCharacters(uri)) {
-                    lastToken.characters.setLength(startBlockIdx)
+
+                    // FIXME: once StringBuilder is fixed in Kotlin, re-enable setLength
+//                    lastToken.characters.setLength(startBlockIdx)
+                    lastToken.characters = StringBuilder(lastToken.characters.subSequence(0, startBlockIdx))
+
                     stack.push(LabeledLinkToken(uri.toString(), label.toString()))
                     return true
                 }
@@ -242,7 +248,7 @@ class AutoLinkTokenizer : InlineTokenizer {
 
 data class EmphasisInlineToken(val char: Char, var count: Int) : InlineToken
 data class CodeInlineToken(val char: Char, var count: Int): InlineToken
-data class InlineTextToken(val characters: StringBuilder): InlineToken
+data class InlineTextToken(var characters: StringBuilder): InlineToken
 data class LabeledLinkToken (val url: String, val label: String) : InlineToken
 
 object BackslashToken : InlineToken
