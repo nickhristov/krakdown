@@ -1,6 +1,6 @@
 package com.github.krakdown
 
-import com.github.krakdown.visitors.HtmlVisitor
+import com.github.krakdown.visitors.InlineHtmlVisitor
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
@@ -31,9 +31,10 @@ class CommonMarkSpec : Spek({
     }
 
     fun serializeToHtml(nodes : List<Node>) :String {
-        val visitor = HtmlVisitor()
-        nodes.forEach { it.visit(visitor) }
-        return visitor.content
+        val visitor = InlineHtmlVisitor()
+        val builder = StringBuilder()
+        nodes.forEach { builder.append(visitor.accept(it)) }
+        return builder.toString()
     }
 
     given("common-mark specifications") {

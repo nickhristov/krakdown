@@ -2,6 +2,7 @@ package com.github.krakdown.block
 
 import com.github.krakdown.*
 import com.github.krakdown.block.node.*
+import kotlin.Exception
 
 /**
  * List rules have recursive definitions. As such, they may recursively call the block parser to
@@ -104,7 +105,7 @@ class ListRule : BlockRule {
         if (separator == '.' || separator == ')') {
             return OrderedListNode(items)
         }
-        throw IllegalStateException("Invalid separator character '$separator'")
+        throw Exception("Invalid separator character '$separator'")
     }
 
     private fun consume(input: List<String>, setting: BulletSetting): ConsumptionResult {
