@@ -2,12 +2,7 @@ package com.github.krakdown.inline
 
 class EmphasisTokenHandler : ForwardSeekingHandler() {
     override fun toInlineText(token: InlineToken): InlineToken {
-        val codetoken = token as EmphasisInlineToken
-        val str = StringBuilder()
-        for (i in 0..codetoken.count) {
-            str.append(codetoken.char)
-        }
-        return InlineTextToken(str)
+        return InlineTextToken(StringBuilder(token.toString()))
     }
 
     override fun makeNode(token: InlineToken, embeddedNodes: List<InlineNode>): InlineNode {

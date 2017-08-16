@@ -3,7 +3,7 @@ package com.github.krakdown.inline
 abstract class ForwardSeekingHandler : InlineTokenHandler {
     final override fun handleToken(parser: InlineParser, index: Int, tokens: List<InlineToken>, result:MutableList<InlineNode>): Int {
         val token = tokens[index]
-        var endIdx = 0
+        var endIdx = index
         if (matchToken(token)) {
             if (index == (tokens.size -1 )) {
                 // token at the end of input
@@ -18,12 +18,16 @@ abstract class ForwardSeekingHandler : InlineTokenHandler {
                     // no match, take the rest of the input
                     endIdx = tokens.size - 1
                 } else {
-                    result.add(makeNode(token, parser.parse(tokens.subList(index+1, endIdx))))
+                    result.add(makeNode(token, parseSubNodes(parser, tokens.subList(index+1, endIdx))))
                 }
-                return endIdx + 1
+                return endIdx + 1 -index
             }
         }
-        return endIdx
+        return endIdx - index
+    }
+
+    open fun parseSubNodes(parser: InlineParser, tokens: List<InlineToken>) : List<InlineNode> {
+        return parser.parse(tokens)
     }
 
     abstract fun toInlineText(token: InlineToken): InlineToken
@@ -33,7 +37,7 @@ abstract class ForwardSeekingHandler : InlineTokenHandler {
     abstract fun matchToken(token: InlineToken): Boolean
 
     private fun scanForwardMatching(input: List<InlineToken>, start: Int, token: InlineToken): Int {
-        for (idx in start .. input.size) {
+        for (idx in start .. (input.size-1)) {
             if (token == input[idx]) {
                 return idx
             }

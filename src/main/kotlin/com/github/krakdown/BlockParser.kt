@@ -1,6 +1,7 @@
 package com.github.krakdown
 
 import com.github.krakdown.block.*
+import com.github.krakdown.inline.InlineParser
 import kotlin.Exception
 
 class BlockParser (val rules: Array<BlockRule>) {
@@ -46,9 +47,9 @@ class BlockParser (val rules: Array<BlockRule>) {
     }
 }
 fun createBlockParser() : BlockParser {
-    val listRule = ListRule()
+    val inlineParser = InlineParser()
+    val listRule = ListRule(inlineParser)
     val blockQuoteRule = BlockQuoteRule()
-
     val parser = BlockParser(arrayOf(
             HeaderRule(),
             listRule,
@@ -56,7 +57,8 @@ fun createBlockParser() : BlockParser {
             FencedCodeBlockRule(),
             blockQuoteRule,
             EmptyLinesRule(),
-            ParagraphRule()))
+            ParagraphRule(inlineParser))
+    )
     listRule.parser = parser
     blockQuoteRule.parser = parser
     return parser

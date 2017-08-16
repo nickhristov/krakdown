@@ -53,6 +53,9 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         if (node is PreformattedStyleNode) {
             return acceptPreformattedNode(node)
         }
+        if (node is ListItemNode) {
+            return acceptListItemNode(node)
+        }
         return acceptUnhandledNode(node)
     }
 
@@ -72,7 +75,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
                                                      elementType: String,
                                                      producer: (T) -> Iterable<Node>): org.w3c.dom.Node {
         val result = document.createElement(elementType)
-        producer(node).forEach { accept(it) }
+        producer(node).forEach { result.appendChild(accept(it)) }
         return result
     }
 
@@ -82,17 +85,19 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
     }
 
     private fun acceptParagraphNode(node: ParagraphNode): org.w3c.dom.Node {
-        val result = document.createElement("p")
-        result.appendChild(document.createTextNode(node.lines.joinToString("\n")))
-        return result
+        return createElementWithChildren(node, "p") { it.nodes }
     }
 
     private fun acceptUnorderedListNode(node: UnorderedListNode): org.w3c.dom.Node {
-        return createElementWithChildren(node, "ul") { it.items.flatMap { it.nodes } }
+        return createElementWithChildren(node, "ul") { it.items }
     }
 
     private fun acceptOrderedListNode(node: OrderedListNode): org.w3c.dom.Node {
-        return createElementWithChildren(node, "ol") { it.items.flatMap { it.nodes } }
+        return createElementWithChildren(node, "ol") { it.items }
+    }
+
+    private fun acceptListItemNode(node: ListItemNode) : org.w3c.dom.Node {
+        return createElementWithChildren(node, "li") { it.nodes }
     }
 
     private fun acceptTextNode(node: TextNode): org.w3c.dom.Node {

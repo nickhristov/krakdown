@@ -46,7 +46,15 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
         if (node is PreformattedStyleNode) {
             return acceptPreformattedNode(node)
         }
+        if (node is ListItemNode) {
+            return acceptListItemNode(node)
+        }
         return acceptUnhandledNode(node)
+    }
+
+    private fun acceptListItemNode(node: ListItemNode): String {
+        val content = node.nodes.map(this::accept).joinToString("")
+        return "<li>$content</li>"
     }
 
     open fun acceptUnhandledNode(node: Node) : String {
@@ -54,18 +62,18 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
     }
 
     fun acceptPreformattedNode(node: PreformattedStyleNode): String {
-        val content = node.nodes.map(this::accept)
-        return "<pre>$content</pre>"
+        val content = node.nodes.map(this::accept).joinToString("")
+        return "<code>$content</code>"
     }
 
     fun acceptEmStyleNode(node: EmStyleNode): String {
-        val content = node.nodes.map(this::accept)
+        val content = node.nodes.map(this::accept).joinToString("")
         return "<em>$content</em>"
     }
 
     fun acceptBoldStyleNode(node: BoldStyleNode): String {
-        val content = node.nodes.map(this::accept)
-        return "<b>$content</b>"
+        val content = node.nodes.map(this::accept).joinToString("")
+        return "<strong>$content</strong>"
     }
 
     fun acceptHtml(htmlNode: HtmlNode) : String {
@@ -108,13 +116,13 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
     }
 
     fun acceptUnorderedListNode(unorderedListNode: UnorderedListNode) : String {
-        val listItemContent = unorderedListNode.items.map{ formatListItem(it) }.joinToString("")
+        val listItemContent = unorderedListNode.items.map{ accept(it) }.joinToString("")
         return "<ul>$listItemContent</ul>"
 
     }
 
     fun acceptOrderedListNode(orderedListNode: OrderedListNode) : String {
-        val listItemContent = orderedListNode.items.map { formatListItem(it) }.joinToString("")
+        val listItemContent = orderedListNode.items.map { accept(it) }.joinToString("")
         if (orderedListNode.start > 0) {
             return "<ol start=\"${orderedListNode.start}\">$listItemContent</ol>"
         } else {
@@ -128,18 +136,8 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
     }
 
     fun acceptParagraphNode(paragraphNode: ParagraphNode) :String {
-        val inlineContent = paragraphNode.lines.map(this::inlineFormat).joinToString ("")
+        val inlineContent = paragraphNode.nodes.map(this::accept).joinToString("")
         return  "<p>$inlineContent</p>"
-    }
-
-    private fun formatListItem(item : ListNodeItem): String {
-        val content = item.nodes.map(this::accept).joinToString("")
-        return "<li>$content</li>"
-    }
-
-    private fun inlineFormat(it: String): String {
-        // TODO: not done yet
-        return it
     }
 
 }

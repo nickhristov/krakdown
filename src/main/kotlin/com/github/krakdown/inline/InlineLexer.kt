@@ -246,12 +246,39 @@ class AutoLinkTokenizer : InlineTokenizer {
     }
 }
 
-data class EmphasisInlineToken(val char: Char, var count: Int) : InlineToken
-data class CodeInlineToken(val char: Char, var count: Int): InlineToken
-data class InlineTextToken(var characters: StringBuilder): InlineToken
-data class LabeledLinkToken (val url: String, val label: String) : InlineToken
+data class EmphasisInlineToken(val char: Char, var count: Int) : InlineToken {
+    override fun toString() : String {
+        val result = StringBuilder()
+        repeat(count, { result.append(char) })
+        return result.toString()
+    }
+}
 
-object BackslashToken : InlineToken
+data class CodeInlineToken(val char: Char, var count: Int): InlineToken {
+    override fun toString() : String {
+        val result = StringBuilder()
+        repeat(count, { result.append(char) })
+        return result.toString()
+    }
+}
+
+data class InlineTextToken(var characters: StringBuilder): InlineToken {
+    override fun toString() : String {
+        return characters.toString()
+    }
+}
+
+data class LabeledLinkToken (val url: String, val label: String) : InlineToken {
+    override fun toString() : String {
+        return "[$label]($url)"
+    }
+}
+
+object BackslashToken : InlineToken {
+    override fun toString() : String {
+        return "\\"
+    }
+}
 
 fun createInlineTextToken(char: Char) : InlineTextToken {
     val token = InlineTextToken(StringBuilder(4096))

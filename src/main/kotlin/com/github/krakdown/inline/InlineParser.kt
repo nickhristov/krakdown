@@ -3,7 +3,7 @@ package com.github.krakdown.inline
 class InlineParser (val lexer: InlineLexer, val inlineTokenHandlers: List<InlineTokenHandler>) {
 
     fun parse(input : String) : List<InlineNode> {
-        val tokens = lexer.tokenize(input)
+        val tokens = lexer.tokenize(input).asReversed()
         return parse(tokens)
     }
 

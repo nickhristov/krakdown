@@ -1,13 +1,38 @@
 package com.github.krakdown.inline
 
+import com.github.krakdown.block.node.TextNode
+
 class CodeInlineTokenHandler : ForwardSeekingHandler() {
-    override fun toInlineText(token: InlineToken): InlineToken {
-        val codetoken = token as CodeInlineToken
-        val str = StringBuilder()
-        for (i in 0..codetoken.count) {
-            str.append(codetoken.char)
+    val literalParser = InlineParser(
+            InlineLexer(emptyList()), listOf(AnythingAsInlineHandler())
+    )
+    override fun parseSubNodes(parser: InlineParser, tokens: List<InlineToken>) : List<InlineNode> {
+        return literalParser.parse(trimSpaces(tokens))
+    }
+
+    private fun trimSpaces(tokens: List<InlineToken>): List<InlineToken> {
+        if (tokens.isNotEmpty()) {
+            val result = ArrayList<InlineToken>(tokens.size)
+            val stripStartIdx = 0
+            val stripEndIdx = tokens.size-1
+            for (idx in 0..(tokens.size-1)) {
+                var token = tokens[idx]
+                if (idx == stripStartIdx && token is InlineTextToken && token.characters.startsWith(" ")) {
+                    token = InlineTextToken(StringBuilder(token.characters.replaceFirst(Regex("^ *"), "")))
+                }
+                if (idx == stripEndIdx && token is InlineTextToken && token.characters.endsWith(" ")) {
+                    token = InlineTextToken(StringBuilder(token.characters.replaceFirst(Regex(" *$"), "")))
+                }
+                result.add(token)
+            }
+            return result
+        } else {
+            return tokens
         }
-        return InlineTextToken(str)
+    }
+
+    override fun toInlineText(token: InlineToken): InlineToken {
+        return InlineTextToken(StringBuilder(token.toString()))
     }
 
     override fun matchToken(token: InlineToken): Boolean {
@@ -16,5 +41,15 @@ class CodeInlineTokenHandler : ForwardSeekingHandler() {
 
     override fun makeNode(token: InlineToken, embeddedNodes: List<InlineNode>): InlineNode {
         return PreformattedStyleNode(embeddedNodes)
+    }
+}
+
+class AnythingAsInlineHandler : InlineTokenHandler {
+    override fun handleToken(parser: InlineParser, index: Int, tokens: List<InlineToken>, result: MutableList<InlineNode>): Int {
+        for(idx in index..(tokens.size-1)) {
+            val token = tokens[idx]
+            result.add(TextNode(token.toString()))
+        }
+        return tokens.size - index
     }
 }

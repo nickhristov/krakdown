@@ -2,16 +2,18 @@ package com.github.krakdown.block
 
 import com.github.krakdown.*
 import com.github.krakdown.block.node.*
+import com.github.krakdown.inline.InlineParser
 import kotlin.Exception
 
 /**
  * List rules have recursive definitions. As such, they may recursively call the block parser to
  * parse nested markdown.
  */
-class ListRule : BlockRule {
+class ListRule(val inlineParser: InlineParser) : BlockRule {
 
-    val unOrderedMatch = Regex(" *([*\\-+]).*")
-    val orderedMatch = Regex(" *[0-9]+([.)]) .+")
+    val unOrderedMatch = Regex("^ *([*\\-+]) .*")
+    val unOrderedMatchEmpty = Regex("^ *([*\\-+])$")
+    val orderedMatch = Regex("^ *[0-9]+([.)]) .+")
     var parser: BlockParser? = null
 
     override fun generate(input: List<String>): ParseNodeResult {
@@ -50,9 +52,9 @@ class ListRule : BlockRule {
                 val replacement = ArrayList<Node>()
                 for (subnode in item.nodes) {
                     if (loose && subnode is TextNode) {
-                        replacement.add(ParagraphNode(listOf(subnode.text)))
+                        replacement.add(ParagraphNode(inlineParser.parse(subnode.text)))
                     } else if (! loose && subnode is ParagraphNode) {
-                        replacement.add(TextNode(concat(" ", subnode.lines)))
+                        replacement.addAll(subnode.nodes)   // unwrap the paragraph node
                     } else {
                         replacement.add(subnode)
                     }
@@ -98,7 +100,7 @@ class ListRule : BlockRule {
         return result
     }
 
-    private fun makeNode(separator: Char, items: List<ListNodeItem>): ListNode {
+    private fun makeNode(separator: Char, items: List<ListItemNode>): ListNode {
         if (separator == '*' || separator == '+' || separator == '-') {
             return UnorderedListNode(items)
         }
@@ -116,9 +118,6 @@ class ListRule : BlockRule {
         var separator = '?'
         for(idx in 0 .. (input.size-1)) {
             val line = input[idx]
-            val orderedMatch = orderedMatch.find(line)
-            val unorderedMatch = unOrderedMatch.find(line)
-
             if (isIndented(line, setting)) {
                 itemMatching = false
                 textAccumulator.add(line.substring(setting.minIndent))
@@ -130,23 +129,32 @@ class ListRule : BlockRule {
                 textAccumulator.add(line)
                 continue
             }
+            val orderedMatch = orderedMatch.find(line)
+            val unorderedMatch = unOrderedMatch.find(line)
+            val unorderedEmptyMatch = unOrderedMatchEmpty.find(line)
             var lineIndent = -1
             if (orderedMatch != null) {
                 foundItem = true
-               lineIndent = recalcOrderedIndentation(line)
+                lineIndent = recalcOrderedIndentation(line)
             }
             if (unorderedMatch != null) {
                 foundItem = true
                 lineIndent = recalcUnorderedIndentation(line)
             }
+            if (unorderedEmptyMatch != null) {
+                lineIndent = recalcUnorderedIndentation(line)
+                if (lineIndent > 1) {
+                    setting.minIndent = lineIndent
+                }
+            }
             if (lineIndent > 1) {
                 setting.minIndent = lineIndent
             }
-            if ((bulletAccumulator.isNotEmpty()) && (unorderedMatch != null || orderedMatch != null)) {
+            if ((bulletAccumulator.isNotEmpty()) && (unorderedMatch != null || orderedMatch != null || unorderedEmptyMatch != null)) {
                 // found next node, break
                 break
             }
-            if (unorderedMatch != null || orderedMatch != null || isIndented(line, setting)) {
+            if (unorderedMatch != null || orderedMatch != null || unorderedEmptyMatch != null || isIndented(line, setting)) {
                 val strippedLine = if ( lineIndent > -1 ) line.substring(lineIndent) else line
                 if (itemMatching) {
                     bulletAccumulator.add(strippedLine)
@@ -155,6 +163,9 @@ class ListRule : BlockRule {
                     }
                     if (unorderedMatch != null) {
                         separator = unorderedMatch.groupValues[1][0]
+                    }
+                    if (unorderedEmptyMatch != null) {
+                        separator = '*'
                     }
                 } else {
                     textAccumulator.add(strippedLine)
@@ -174,9 +185,9 @@ class ListRule : BlockRule {
             } else {
                 nodes.addAll(parser!!.parse(bulletAccumulator))
             }
-            return ConsumptionResult(ListNodeItem(nodes, loose), textAccumulator.size + bulletAccumulator.size, separator)
+            return ConsumptionResult(ListItemNode(nodes, loose), textAccumulator.size + bulletAccumulator.size, separator)
         } else {
-            return ConsumptionResult(ListNodeItem(listOf()), 0, separator)
+            return ConsumptionResult(ListItemNode(listOf()), 0, separator)
         }
     }
 
@@ -215,7 +226,7 @@ class ListRule : BlockRule {
         return true
     }
 
-    data class ConsumptionResult(val node : ListNodeItem, val lines : Int, val separator: Char)
+    data class ConsumptionResult(val node : ListItemNode, val lines : Int, val separator: Char)
 
 }
 
