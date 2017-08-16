@@ -3,6 +3,7 @@ package com.github.krakdown.visitors
 import com.github.krakdown.Node
 import com.github.krakdown.NodeVisitor
 import com.github.krakdown.block.node.*
+import com.github.krakdown.inline.AnchorNode
 import com.github.krakdown.inline.BoldStyleNode
 import com.github.krakdown.inline.EmStyleNode
 import com.github.krakdown.inline.PreformattedStyleNode
@@ -56,7 +57,18 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         if (node is ListItemNode) {
             return acceptListItemNode(node)
         }
+        if (node is AnchorNode) {
+            return acceptAnchorNode(node)
+        }
         return acceptUnhandledNode(node)
+    }
+
+    private fun acceptAnchorNode(node: AnchorNode): org.w3c.dom.Node {
+        val anchor = document.createElement("a")
+        val textContent = if (node.label.isNotBlank()) node.label else node.href
+        anchor.appendChild(document.createTextNode(textContent))
+        anchor.setAttribute("href", node.href)
+        return anchor
     }
 
     private fun acceptPreformattedNode(node: PreformattedStyleNode): org.w3c.dom.Node {

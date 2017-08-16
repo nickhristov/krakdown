@@ -1,5 +1,8 @@
 package com.github.krakdown
 
+import com.github.krakdown.inline.InlineLexer
+import com.github.krakdown.inline.InlineTextTokenizer
+import com.github.krakdown.inline.LabeledLinkToken
 import com.github.krakdown.visitors.InlineHtmlVisitor
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
@@ -9,6 +12,7 @@ import org.junit.runner.RunWith
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @Suppress("unused")
 @RunWith(JUnitPlatform::class)
@@ -37,6 +41,17 @@ class CommonMarkSpec : Spek({
         return builder.toString()
     }
 
+    given("a pre-defined link") {
+        val link = "[some label](//someurl)"
+        it("inline tokenizer should tokenize the link") {
+            val result = InlineLexer().tokenize(link)
+            assertEquals(1, result.size, "expecting exactly one anchor token")
+            assertTrue(result[0] is LabeledLinkToken)
+            assertEquals("some label", (result[0] as LabeledLinkToken).label, "labels should match")
+            assertEquals("//someurl", (result[0] as LabeledLinkToken).url, "urls should match")
+        }
+    }
+
     given("common-mark specifications") {
         val parser = createBlockParser()
         val lines = load("commonmark.testspec")
@@ -47,7 +62,6 @@ class CommonMarkSpec : Spek({
                 val generatedHtml = serializeToHtml(nodes)
                 assertEquals(html, generatedHtml)
             }
-
         }
     }
 

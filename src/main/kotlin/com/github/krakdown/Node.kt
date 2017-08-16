@@ -1,5 +1,3 @@
 package com.github.krakdown
 
-abstract class Node {
-
-}
+abstract class Node

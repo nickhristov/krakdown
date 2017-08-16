@@ -215,14 +215,17 @@ class LinkTokenizer : InlineTokenizer {
                     startBlockIdx > -1 &&
                     startBlockIdx < endBlockIdx &&
                     endBlockIdx < startParenIdx) {
-                val label = lastToken.characters.subSequence(startBlockIdx, endBlockIdx)
-                val uri = lastToken.characters.subSequence(startParenIdx, lastToken.characters.length)
+                val label = lastToken.characters.subSequence(startBlockIdx + 1, endBlockIdx)
+                val uri = lastToken.characters.subSequence(startParenIdx+1, lastToken.characters.length)
                 if (labelValidCharacters(label) && uriValidCharacters(uri)) {
 
-                    // FIXME: once StringBuilder is fixed in Kotlin, re-enable setLength
+                    if (startBlockIdx == 0) {
+                        stack.pop() // the previous inline token is now empty, pop it from the stack as it has no content
+                    } else {
+                      // FIXME: once StringBuilder is fixed in Kotlin, re-enable setLength
 //                    lastToken.characters.setLength(startBlockIdx)
-                    lastToken.characters = StringBuilder(lastToken.characters.subSequence(0, startBlockIdx))
-
+                        lastToken.characters = StringBuilder(lastToken.characters.subSequence(0, startBlockIdx))
+                    }
                     stack.push(LabeledLinkToken(uri.toString(), label.toString()))
                     return true
                 }

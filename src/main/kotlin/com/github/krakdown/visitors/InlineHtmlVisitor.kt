@@ -3,6 +3,7 @@ package com.github.krakdown.visitors
 import com.github.krakdown.Node
 import com.github.krakdown.NodeVisitor
 import com.github.krakdown.block.node.*
+import com.github.krakdown.inline.AnchorNode
 import com.github.krakdown.inline.BoldStyleNode
 import com.github.krakdown.inline.EmStyleNode
 import com.github.krakdown.inline.PreformattedStyleNode
@@ -49,7 +50,15 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
         if (node is ListItemNode) {
             return acceptListItemNode(node)
         }
+        if (node is AnchorNode) {
+            return acceptAnchorNode(node)
+        }
         return acceptUnhandledNode(node)
+    }
+
+    private fun acceptAnchorNode(node: AnchorNode): String {
+        val text = if (node.label.isNotBlank()) node.label else node.href
+        return "<a href=\"${node.href}\">$text</a>"
     }
 
     private fun acceptListItemNode(node: ListItemNode): String {

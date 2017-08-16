@@ -29,6 +29,7 @@ class InlineParser (val lexer: InlineLexer, val inlineTokenHandlers: List<Inline
         EmphasisTokenHandler(),
         CodeInlineTokenHandler(),
         BackslashInlineTokenHandler(),
+        LabeledLinkTokenHandler(),
         InlineTextTokenHandler()
     ))
 }
