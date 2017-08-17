@@ -2,10 +2,15 @@ package com.github.krakdown.block
 
 import com.github.krakdown.BlockRule
 import com.github.krakdown.EMPTY_PARSE_NODE_RESULT
+import com.github.krakdown.Node
 import com.github.krakdown.ParseNodeResult
 import com.github.krakdown.block.node.EmptyLinesNode
 
 class EmptyLinesRule: BlockRule {
+    override fun postProcessOutput(nodes: MutableList<Node>) {
+
+    }
+
     override fun generate(input: List<String>): ParseNodeResult {
         val count = input
                 .takeWhile { it == "" }

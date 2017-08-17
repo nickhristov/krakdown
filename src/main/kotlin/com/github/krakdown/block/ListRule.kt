@@ -10,6 +10,9 @@ import kotlin.Exception
  * parse nested markdown.
  */
 class ListRule(val inlineParser: InlineParser) : BlockRule {
+    override fun postProcessOutput(nodes: MutableList<Node>) {
+        
+    }
 
     val unOrderedMatch = Regex("^ *([*\\-+]) .*")
     val unOrderedMatchEmpty = Regex("^ *([*\\-+])$")
@@ -52,9 +55,9 @@ class ListRule(val inlineParser: InlineParser) : BlockRule {
                 val replacement = ArrayList<Node>()
                 for (subnode in item.nodes) {
                     if (loose && subnode is TextNode) {
-                        replacement.add(ParagraphNode(inlineParser.parse(subnode.text)))
+                        replacement.add(ParagraphNode(subnode.text, inlineParser::parse))
                     } else if (! loose && subnode is ParagraphNode) {
-                        replacement.addAll(subnode.nodes)   // unwrap the paragraph node
+                        replacement.addAll(subnode.getNodes())   // unwrap the paragraph node
                     } else {
                         replacement.add(subnode)
                     }

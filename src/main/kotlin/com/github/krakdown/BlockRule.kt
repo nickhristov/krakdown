@@ -21,4 +21,6 @@ interface BlockRule {
         }
         return input.subList(0, endIndex)
     }
+
+    fun postProcessOutput(nodes: MutableList<Node>)
 }

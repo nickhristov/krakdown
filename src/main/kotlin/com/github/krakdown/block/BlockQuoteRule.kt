@@ -2,10 +2,14 @@ package com.github.krakdown.block
 
 import com.github.krakdown.BlockParser
 import com.github.krakdown.BlockRule
+import com.github.krakdown.Node
 import com.github.krakdown.ParseNodeResult
 import com.github.krakdown.block.node.BlockQuoteNode
 
 class BlockQuoteRule: BlockRule {
+    override fun postProcessOutput(nodes: MutableList<Node>) {
+
+    }
 
     var parser: BlockParser? = null
 

@@ -97,7 +97,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
     }
 
     private fun acceptParagraphNode(node: ParagraphNode): org.w3c.dom.Node {
-        return createElementWithChildren(node, "p") { it.nodes }
+        return createElementWithChildren(node, "p") { it.getNodes() }
     }
 
     private fun acceptUnorderedListNode(node: UnorderedListNode): org.w3c.dom.Node {

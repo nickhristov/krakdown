@@ -145,7 +145,7 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
     }
 
     fun acceptParagraphNode(paragraphNode: ParagraphNode) :String {
-        val inlineContent = paragraphNode.nodes.map(this::accept).joinToString("")
+        val inlineContent = paragraphNode.getNodes().map(this::accept).joinToString("")
         return  "<p>$inlineContent</p>"
     }
 

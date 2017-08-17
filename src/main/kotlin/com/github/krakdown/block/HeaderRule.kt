@@ -1,12 +1,12 @@
 package com.github.krakdown.block
 
-import com.github.krakdown.BlockRule
-import com.github.krakdown.EMPTY_PARSE_NODE_RESULT
-import com.github.krakdown.EMPTY_PARSE_NODE_RESULT
-import com.github.krakdown.ParseNodeResult
+import com.github.krakdown.*
 import com.github.krakdown.block.node.HeaderNode
 
 class HeaderRule : BlockRule {
+    override fun postProcessOutput(nodes: MutableList<Node>) {
+
+    }
 
     override fun generate(input: List<String>): ParseNodeResult {
         val prefixForm : ParseNodeResult = generatePrefixForm(input)

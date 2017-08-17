@@ -35,6 +35,7 @@ class BlockParser (val rules: Array<BlockRule>) {
                     matches = true
                     nodes.addAll(ruleParseResult.nodes)
                     lines = lines.subList(ruleParseResult.lines, lines.size)
+                    rule.postProcessOutput(nodes)
                     break
                 }
             }
