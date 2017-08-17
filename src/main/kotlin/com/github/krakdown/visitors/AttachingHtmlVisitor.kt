@@ -72,7 +72,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
     }
 
     private fun acceptPreformattedNode(node: PreformattedStyleNode): org.w3c.dom.Node {
-        return createElementWithChildren(node, "pre") { node.nodes }
+        return createElementWithChildren(node, "code") { node.nodes }
     }
 
     private fun acceptEmStyleNode(node: EmStyleNode): org.w3c.dom.Node {
