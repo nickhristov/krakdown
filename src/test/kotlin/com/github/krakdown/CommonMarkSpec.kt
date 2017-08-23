@@ -65,6 +65,19 @@ class CommonMarkSpec : Spek({
         }
     }
 
+//    given("debug") {
+//        val parser = createBlockParser()
+//        val lines = load("debug.testspec")
+//        val tests = parseTests(lines)
+//        for((title, markdown, html) in tests) {
+//            it(title) {
+//                val nodes = parser.parse(markdown)
+//                val generatedHtml = serializeToHtml(nodes)
+//                assertEquals(html, generatedHtml)
+//            }
+//        }
+//    }
+
 })
 
 fun parseTests(lines: List<String>): List<SpecTest> {
@@ -91,6 +104,9 @@ fun parseTests(lines: List<String>): List<SpecTest> {
         }
         if (line == "-----------------------------------++++++++++++++++++++++++++") {
             state = ParseState.HTML
+            continue
+        }
+        if (state == ParseState.HTML && line.startsWith("#")) {
             continue
         }
 

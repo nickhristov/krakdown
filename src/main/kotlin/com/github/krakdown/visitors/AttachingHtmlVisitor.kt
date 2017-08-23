@@ -60,7 +60,14 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         if (node is AnchorNode) {
             return acceptAnchorNode(node)
         }
+        if (node == ThematicBreakNode) {
+            return acceptThematicBreakNode(node)
+        }
         return acceptUnhandledNode(node)
+    }
+
+    private fun acceptThematicBreakNode(node: Node): org.w3c.dom.Node {
+        return document.createElement("hr")
     }
 
     private fun acceptAnchorNode(node: AnchorNode): org.w3c.dom.Node {

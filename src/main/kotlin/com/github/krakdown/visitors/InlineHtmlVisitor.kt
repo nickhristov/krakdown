@@ -53,7 +53,14 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
         if (node is AnchorNode) {
             return acceptAnchorNode(node)
         }
+        if (node == ThematicBreakNode) {
+            return acceptThematicBreak(node)
+        }
         return acceptUnhandledNode(node)
+    }
+
+    private fun acceptThematicBreak(node: Node): String {
+        return "<hr/>"
     }
 
     private fun acceptAnchorNode(node: AnchorNode): String {

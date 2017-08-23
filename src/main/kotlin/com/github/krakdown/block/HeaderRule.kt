@@ -4,6 +4,8 @@ import com.github.krakdown.*
 import com.github.krakdown.block.node.HeaderNode
 
 class HeaderRule : BlockRule {
+    val validATXPrefixes = listOf("# ", "## ", "### ", "#### ", "##### ", "###### ")
+
     override fun postProcessOutput(nodes: MutableList<Node>) {
 
     }
@@ -30,8 +32,10 @@ class HeaderRule : BlockRule {
     }
 
     private fun generatePrefixForm(input: List<String>): ParseNodeResult {
-        if (input.isNotEmpty() && input[0].startsWith("#")) {
-            return ParseNodeResult(listOf(HeaderNode(headerSize(input), strip(input[0]))), 1)
+        if (input.isNotEmpty()) {
+            validATXPrefixes
+                    .filter { it == input[0].substring(0, Math.min(it.length, input[0].length)) }
+                    .firstOrNull { return ParseNodeResult(listOf(HeaderNode(headerSize(input), strip(input[0]))), 1) }
         }
         return EMPTY_PARSE_NODE_RESULT
     }
