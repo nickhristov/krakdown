@@ -124,9 +124,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
     }
 
     private fun acceptHeaderNode(node: HeaderNode): org.w3c.dom.Node {
-        val el = document.createElement("h${node.size}")
-        el.appendChild(document.createTextNode(node.header))
-        return el
+        return createElementWithChildren(node, "h${node.size}") { it.children }
     }
 
     private fun acceptBlockQuote(node: BlockQuoteNode): org.w3c.dom.Node {

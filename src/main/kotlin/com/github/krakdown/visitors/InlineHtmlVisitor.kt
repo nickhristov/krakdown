@@ -110,12 +110,12 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
     }
 
     fun acceptBlockQuote(blockQuoteNode: BlockQuoteNode) : String {
-        val nestedContent = blockQuoteNode.nodes.map(this::accept).joinToString("")
+        val nestedContent = blockQuoteNode.nodes.joinToString("", transform = this::accept)
         return "<blockquote>$nestedContent</blockquote>"
     }
 
     fun acceptCodeBlock(codeBlockNode: CodeBlockNode) : String {
-        val joinedContent = codeBlockNode.lines.map {it + "\n"}.joinToString("")
+        val joinedContent = codeBlockNode.lines.joinToString("") {it + "\n"}
         if (codeBlockNode.language.isNotBlank()) {
             return "<pre><code class=\"language-${codeBlockNode.language}\">$joinedContent</code></pre>"
         } else {
@@ -124,7 +124,8 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
     }
 
     fun acceptHeaderNode(headerNode: HeaderNode) : String {
-        return "<h${headerNode.size}>${headerNode.header}</h${headerNode.size}>"
+        val nestedContent = headerNode.children.joinToString("", transform = this::accept)
+        return "<h${headerNode.size}>$nestedContent</h${headerNode.size}>"
     }
 
     fun acceptTextNode(textNode: TextNode) : String {

@@ -53,7 +53,7 @@ fun createBlockParser() : BlockParser {
     val blockQuoteRule = BlockQuoteRule()
     val parser = BlockParser(arrayOf(
             ThematicBreakRule(),
-            HeaderRule(),
+            HeaderRule(inlineParser),
             listRule,
             IndentedBlockRule(),
             FencedCodeBlockRule(),
