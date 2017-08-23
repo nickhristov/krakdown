@@ -6,9 +6,9 @@ import com.github.krakdown.inline.InlineParser
 
 class HeaderRule(val inline: InlineParser) : BlockRule {
 
-    val atxRegex = Regex("^#{1,6} +.+")
-    val setext1 = Regex("^ {0,3}===+")
-    val setext2 = Regex("^ {0,3}---+")
+    val atxRegex = Regex("^ {0,3}#{1,6} +.+")
+    val setext1 = Regex("^ {0,3}=+")
+    val setext2 = Regex("^ {0,3}-+")
 
     override fun postProcessOutput(nodes: MutableList<Node>) {
 
@@ -41,16 +41,26 @@ class HeaderRule(val inline: InlineParser) : BlockRule {
 
     private fun strip(input: String): String {
         var count = 0
+        var found = false
+        // bleh, can be probably simplified
         for (c in input) {
-            if (c == '#') {
-                ++count
+            if (c == ' ' || c == '#') {
+                if (c == '#') {
+                    found = true
+                }
+                if (c == ' ' && found) {
+                    break
+                }
+            } else {
+                break
             }
+            ++count
         }
         return input.substring(count).trim()
     }
 
     private fun headerSize(input: List<String>): Int {
-        if (input[0].startsWith("#")) {
+        if (atxRegex.matches(input[0])) {
             var count = 0
             for (c in input[0]) {
                 if (c == '#') {

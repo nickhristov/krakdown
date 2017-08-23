@@ -8,16 +8,37 @@ import com.github.krakdown.block.node.ThematicBreakNode
 
 class ThematicBreakRule : BlockRule {
 
-    val first = Regex("^ {0,3}[\\- ]{3,}$")
-    val second = Regex("^ {0,3}[_ ]{3,}+$")
-    val third = Regex("^ {0,3}[* ]{3,}+$")
     override fun generate(input: List<String>): ParseNodeResult {
         val firstLine = input[0]
-        if (first.matches(firstLine) || second.matches(firstLine) || third.matches(firstLine)) {
+        if (matches(firstLine, '-') || matches(firstLine,'_') || matches(firstLine, '*')) {
             return ParseNodeResult(listOf(ThematicBreakNode), 1)
         } else {
             return EMPTY_PARSE_NODE_RESULT
         }
+    }
+
+    private fun matches(firstLine: String, mc: Char): Boolean {
+        var state = 0   // 0 = matching init spaces, 1 matching required char
+        var spacecount = 0
+        var charcount = 0
+        // there are possible optimizations here to remove branching, but this is a low priority fix
+        for (idx in 0 until firstLine.length) {
+            val c = firstLine[idx]
+            if (c != mc && c != ' ') {
+                return false
+            }
+            if (c == mc) {
+                state = 1
+                ++charcount
+            }
+            if (c == ' ' && state == 0) {
+                ++spacecount
+            }
+            if (spacecount > 3) {
+                return false
+            }
+        }
+        return charcount >= 3
     }
 
     override fun postProcessOutput(nodes: MutableList<Node>) {
