@@ -7,6 +7,8 @@ import com.github.krakdown.inline.InlineParser
 class HeaderRule(val inline: InlineParser) : BlockRule {
 
     val atxRegex = Regex("^#{1,6} +.+")
+    val setext1 = Regex("^ {0,3}===+")
+    val setext2 = Regex("^ {0,3}---+")
 
     override fun postProcessOutput(nodes: MutableList<Node>) {
 
@@ -23,11 +25,8 @@ class HeaderRule(val inline: InlineParser) : BlockRule {
 
     private fun generatePostfixForm(input: List<String>): ParseNodeResult {
         if (input.size > 1) {
-            if (input[1].startsWith("===") && input[0].isNotBlank()) {
-                return ParseNodeResult(listOf(HeaderNode(headerSize(input), inline.parse(input[0]))), 2)
-            }
-            if (input[1].startsWith("---") && input[0].isNotBlank()) {
-                return ParseNodeResult(listOf(HeaderNode(headerSize(input), inline.parse(input[0]))), 2)
+            if (input[0].isNotBlank() && (setext1.matches(input[1]) || setext2.matches(input[1]))) {
+                return ParseNodeResult(listOf(HeaderNode(headerSize(input), inline.parse(input[0].trim()))), 2)
             }
         }
         return EMPTY_PARSE_NODE_RESULT
