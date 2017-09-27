@@ -176,17 +176,24 @@
         </plugins>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>3.0.0</version>
+            </extension>
+        </extensions>
     </build>
     <distributionManagement>
         <repository>
             <id>markdown.online</id>
             <name>markdown.online</name>
-            <url>sftp://maven.markdown.online/maven-releases</url>
+            <url>sftp://maven.markdown.online/maven</url>
         </repository>
         <snapshotRepository>
             <id>markdown.online.snapshots</id>
             <name>markdown.online.snapshots</name>
-            <url>sftp://maven.markdown.online/maven-snapshots</url>
+            <url>sftp://maven.markdown.online/maven</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
