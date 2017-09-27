@@ -20,4 +20,9 @@ abstract class ListNode(open val items: List<ListItemNode>) : Node()
 
 data class OrderedListNode(override val items: List<ListItemNode>, var start: Int = 0) : ListNode(items)
 data class UnorderedListNode(override val items: List<ListItemNode>) : ListNode(items)
+
+data class TableNode(val rowNodes: List<TableRowNode>) : Node()
+data class TableRowNode(val cellNodes: List<TableCellNode>) : Node()
+data class TableCellNode(val contents: List<InlineNode>) : Node()
+
 object ThematicBreakNode : Node()

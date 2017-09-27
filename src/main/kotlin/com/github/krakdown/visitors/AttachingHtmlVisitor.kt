@@ -60,10 +60,31 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         if (node is AnchorNode) {
             return acceptAnchorNode(node)
         }
+        if (node is TableNode) {
+            return acceptTableNode(node)
+        }
+        if (node is TableRowNode) {
+            return acceptTableRowNode(node)
+        }
+        if (node is TableCellNode) {
+            return acceptTableCellNode(node)
+        }
         if (node == ThematicBreakNode) {
             return acceptThematicBreakNode(node)
         }
         return acceptUnhandledNode(node)
+    }
+
+    private fun acceptTableNode(node: TableNode): org.w3c.dom.Node {
+        return createElementWithChildren(node, "table") { node.rowNodes }
+    }
+
+    private fun acceptTableRowNode(node: TableRowNode): org.w3c.dom.Node {
+        return createElementWithChildren(node, "tr") { node.cellNodes }
+    }
+
+    private fun acceptTableCellNode(node: TableCellNode): org.w3c.dom.Node {
+        return createElementWithChildren(node, "td") { node.contents }
     }
 
     private fun acceptThematicBreakNode(node: Node): org.w3c.dom.Node {
