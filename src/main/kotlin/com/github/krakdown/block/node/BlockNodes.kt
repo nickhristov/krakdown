@@ -14,7 +14,7 @@ data class ParagraphNode(var text: String, private val inlineParser: (String) ->
     }
 }
 
-data class ListItemNode(var nodes: List<Node>, var loose: Boolean = false) : Node()
+data class ListItemNode(var nodes: List<Node>, var loose: Boolean = false, var hasTodo:Boolean = false, var todoIsComplete: Boolean = false) : Node()
 data class TextNode(var text: String) : InlineNode()
 abstract class ListNode(open val items: List<ListItemNode>) : Node()
 

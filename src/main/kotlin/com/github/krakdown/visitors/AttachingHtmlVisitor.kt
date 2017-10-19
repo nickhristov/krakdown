@@ -76,7 +76,19 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
     }
 
     private fun acceptTableNode(node: TableNode): org.w3c.dom.Node {
-        return createElementWithChildren(node, "table") { node.rowNodes }
+        if (node.rowNodes.size > 1) {
+            val tableElement = document.createElement("table")
+            val theadElement = document.createElement("thead")
+            val tbodyElement = document.createElement("tbody")
+            tableElement.appendChild(theadElement)
+            tableElement.appendChild(tbodyElement)
+            theadElement.appendChild(accept(node.rowNodes[0]))
+            node.rowNodes.listIterator(1).forEach { tbodyElement.appendChild(accept(it)) }
+            return tableElement
+        } else {
+            // single row, don't split thead and tbody
+            return createElementWithChildren(node, "table") { node.rowNodes }
+        }
     }
 
     private fun acceptTableRowNode(node: TableRowNode): org.w3c.dom.Node {
@@ -167,6 +179,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         val codeEl = document.createElement("code")
         if (node.language != "") {
             codeEl.setAttribute("language", node.language)
+            codeEl.setAttribute("class", node.language)
         }
         preEl.appendChild(codeEl)
         codeEl.textContent = node.lines.joinToString("\n")

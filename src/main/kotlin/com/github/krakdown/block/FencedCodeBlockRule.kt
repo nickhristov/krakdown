@@ -6,7 +6,7 @@ import com.github.krakdown.Node
 import com.github.krakdown.ParseNodeResult
 import com.github.krakdown.block.node.CodeBlockNode
 
-class FencedCodeBlockRule : BlockRule {
+open class FencedCodeBlockRule : BlockRule {
     override fun postProcessOutput(nodes: MutableList<Node>) {
 
     }

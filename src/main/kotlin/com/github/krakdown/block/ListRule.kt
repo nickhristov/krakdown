@@ -104,13 +104,17 @@ class ListRule(val inlineParser: InlineParser) : BlockRule {
     }
 
     private fun makeNode(separator: Char, items: List<ListItemNode>): ListNode {
-        if (separator == '*' || separator == '+' || separator == '-') {
+        if (separatorIsUnordered(separator)) {
             return UnorderedListNode(items)
         }
         if (separator == '.' || separator == ')') {
             return OrderedListNode(items)
         }
         throw Exception("Invalid separator character '$separator'")
+    }
+
+    private fun separatorIsUnordered(separator: Char): Boolean {
+        return separator == '*' || separator == '+' || separator == '-'
     }
 
     private fun consume(input: List<String>, setting: BulletSetting): ConsumptionResult {
@@ -181,6 +185,22 @@ class ListRule(val inlineParser: InlineParser) : BlockRule {
         if (foundItem && bulletAccumulator.isNotEmpty()) {
             val nodes = ArrayList<Node>()
             var loose = false
+            var hasTodo = false
+            var todoIsCompleted = false
+
+            // handle TO-DO brackets
+            if (separatorIsUnordered(separator) && bulletAccumulator[0].startsWith("[ ]")) {
+                hasTodo = true
+            }
+            if (separatorIsUnordered(separator) && bulletAccumulator[0].startsWith("[x]")) {
+                hasTodo = true
+                todoIsCompleted = true
+            }
+            if (bulletAccumulator[0].startsWith("[ ]") || bulletAccumulator[0].startsWith("[x]")) {
+                // strip the todo text
+                bulletAccumulator[0] = bulletAccumulator[0].substring(minOf(3, bulletAccumulator[0].length))
+            }
+
             if (textAccumulator.isNotEmpty()) {
                 val subNodes = parser!!.parse(bulletAccumulator + textAccumulator)
                 nodes.addAll(subNodes)
@@ -188,21 +208,10 @@ class ListRule(val inlineParser: InlineParser) : BlockRule {
             } else {
                 nodes.addAll(parser!!.parse(bulletAccumulator))
             }
-            return ConsumptionResult(ListItemNode(nodes, loose), textAccumulator.size + bulletAccumulator.size, separator)
+            return ConsumptionResult(ListItemNode(nodes, loose, hasTodo, todoIsCompleted), textAccumulator.size + bulletAccumulator.size, separator)
         } else {
             return ConsumptionResult(ListItemNode(listOf()), 0, separator)
         }
-    }
-
-    private fun concat(join:String, lines:List<String>) : String  {
-        var delimiter = ""
-        var accumulator = ""
-        for (line in lines) {
-            accumulator += delimiter
-            accumulator += line
-            delimiter = join
-        }
-        return accumulator
     }
 
     private fun recalcOrderedIndentation(line: String): Int {
