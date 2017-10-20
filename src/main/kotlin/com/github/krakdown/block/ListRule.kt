@@ -215,13 +215,13 @@ class ListRule(val inlineParser: InlineParser) : BlockRule {
     }
 
     private fun recalcOrderedIndentation(line: String): Int {
-        val regex = Regex(" *[1-9][.)] +")
+        val regex = Regex("^ *[1-9][.)] +")
         val replaced = regex.replace(line, "")
         return line.length - replaced.length
     }
 
     private fun recalcUnorderedIndentation(line: String): Int {
-        val regex = Regex(" *[*\\-+] *")
+        val regex = Regex("^ *[*\\-+] *")
         val replaced = regex.replace(line, "")
         return line.length - replaced.length
     }
