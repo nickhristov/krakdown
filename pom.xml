@@ -118,9 +118,9 @@
                 <version>${kotlin.version}</version>
 
                 <executions>
+
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                             <goal>js</goal>
@@ -129,10 +129,8 @@
 
                     <execution>
                         <id>test-compile</id>
-                        <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
-                            <goal>test-js</goal>
                         </goals>
                     </execution>
 

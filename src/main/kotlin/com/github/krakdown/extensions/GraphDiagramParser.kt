@@ -244,7 +244,7 @@ open class GraphDiagramParser {
      */
     private fun matchUntilMismatch(tokens: List<GraphDiagramToken>, consumer: (List<GraphDiagramToken>) -> GraphMatchResult): GraphMatchResult {
         var idx = 0
-        var resultNodeList = mutableListOf<GraphNode>()
+        val resultNodeList = mutableListOf<GraphNode>()
         while (idx < tokens.size) {
             val (count, resultList) = consumer(tokens.subList(idx, tokens.size))
             resultNodeList.addAll(resultList)
