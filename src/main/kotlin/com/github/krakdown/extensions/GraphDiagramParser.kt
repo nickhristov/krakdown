@@ -1,7 +1,5 @@
 package com.github.krakdown.extensions
 
-import java.util.Collections.emptyList
-
 /**
  *
  * # Diagram syntax
