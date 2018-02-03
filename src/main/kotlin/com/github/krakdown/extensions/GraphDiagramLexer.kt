@@ -166,29 +166,17 @@ object GraphDiagramLexer {
     }
 
     private fun cardinalityN(index: Int, input: String): LexicalMatch {
-        return if(input[index] == 'N' || input[index] == 'n') {
-            LexicalMatch(1, CARDINALITYN)
-        } else {
-            EMPTY_LEXICAL_RESULT
-        }
+        return match(index, input, "for N", CARDINALITYN)
     }
 
 
     private fun cardinality1(index: Int, input: String): LexicalMatch {
-        return if(input[index] == '1') {
-            LexicalMatch(1, CARDINALITY1)
-        } else {
-            EMPTY_LEXICAL_RESULT
-        }
+        return match(index, input, "for 1", CARDINALITY1)
     }
 
 
     private fun cardinality0(index: Int, input: String): LexicalMatch {
-        return if(input[index] == '0') {
-            LexicalMatch(1, CARDINALITY0)
-        } else {
-            EMPTY_LEXICAL_RESULT
-        }
+        return match(index, input, "for 0", CARDINALITY0)
     }
 
     private fun astoken(index: Int, input: String): LexicalMatch {

@@ -79,5 +79,17 @@ class GraphDiagramParserTest : Spek({
             assertEquals("First participant is missing", "This is a simple message", result.connections[0].label)
             assertEquals("First participant is missing", "This is another message", result.connections[1].label)
         }
+
+        it("should parse properly encountered issue KR-6") {
+            val input = """participant N as "New"
+participant Q as "Queued"
+participant S as "Submitted"
+N -> Q
+Q -> S
+"""
+
+            val result = parser.parse(input)
+            assertEquals("Invalid number of vertices", 3, result.vertexes.size)
+        }
     }
 })

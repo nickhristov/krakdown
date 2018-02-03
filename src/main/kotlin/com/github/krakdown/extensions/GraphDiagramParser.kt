@@ -22,11 +22,12 @@ package com.github.krakdown.extensions
  *diagram: heading? associations
  *heading: definition*
  *definition: role NAME (AS (LABEL|NAME))? NEWLINE
- *role: (PARTICIPANT|DATABASE|QUEUE|INTERFACE|PROCESS|PREDEFPROCESS|IO|DECISION|TERMINAL|CONNECTOR|SWIMLANE)
+ *role: (PARTICIPANT|DATABASE|QUEUE|INTERFACE|PROCESS|PREDEFPROCESS|IO|DECISION|TERMINAL|CONNECTOR|SWIMLANE|ACTIVITY|STATE|COMPONENT)
  *associations: association+
- *association: NAME connection NAME (COMMA NAME)* messageblock? NEWLINE
+ *node: (NAME|START|END)
+ *association: node connection node (COMMA node)* messageblock? NEWLINE
  *connection: (DASHES|FORWARD|BACKWARD|FORWARDX|BACKWARDX|DOTS) cardinality?
- *cardinality: ZERO|ONE|N
+ *cardinality: FOR_ZERO|FOR_ONE|FOR_N
  *messageblock: COLON LABEL
  *```
  *
@@ -40,9 +41,9 @@ package com.github.krakdown.extensions
  *FORWARDX: '-x'
  *BACKWARDX: 'x-'
  *DOTS: '..'
- *ZERO: '0'
- *ONE: '1'
- *N: 'N'
+ *FOR_ZERO: 'for 0'
+ *FOR_ONE: 'for 1'
+ *FOR_N: 'for N'
  *COLON : ':'
  *AS : 'as'
  *LABEL : '".+"'
@@ -58,6 +59,9 @@ package com.github.krakdown.extensions
  *TERMINAL : 'terminal'
  *CONNECTOR : 'connector'
  *SWIMLANE : 'swimlane'
+ *ACTIVITY : 'activity'
+ *START : 'start'
+ *END : 'end'
  *```
  *
  *
@@ -76,7 +80,7 @@ open class GraphDiagramParser {
             val result = orderedMatch(tokens, this::heading, this::associations)
             val vertices = result.nodes.filter { it is GraphVertex }.map { it as GraphVertex }.toMutableList()
 
-            val verticesMap = vertices.associateBy { it.label }.toMutableMap()
+            val verticesMap = vertices.associateBy { it.name }.toMutableMap()
 
             val internal = result.nodes.filter { it is InternalConnectionNode }.map { it as InternalConnectionNode }
 
@@ -290,6 +294,7 @@ enum class ConnectionStyle {
 
 data class GraphVertex( val name :String, val label: String, val vertexType: GraphVertexType) : GraphExternalNode()
 
+// FIXME: spelling of vertexes (it's vertices, stupid)
 data class RootGraphNode(val vertexes: List<GraphVertex>, val connections: List<GraphConnection>) : GraphExternalNode()
 
 data class GraphConnection(val start: GraphVertex, val end: GraphVertex,
