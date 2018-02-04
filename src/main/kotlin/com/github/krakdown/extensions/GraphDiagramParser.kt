@@ -112,7 +112,7 @@ open class GraphDiagramParser {
         var idx = 0
         while(idx < tokens.size) {
             val token = tokens[idx]
-            if (token == NEWLINE) {
+            if (token is Newline) {
                 // skip it
             } else if (token is VertexTypeToken) {
 
@@ -123,8 +123,8 @@ open class GraphDiagramParser {
                     val astoken = tokens[idx+2]
                     val labeltoken = tokens[idx+3]
                     if (nametoken is NameToken) {
-                        if (astoken is AS || astoken == NEWLINE) {
-                            if (astoken is AS) {
+                        if (astoken is As || astoken is Newline) {
+                            if (astoken is As) {
                                 if (labeltoken is LabelToken) {
                                     idx += 3
                                     result.add(GraphVertex(nametoken.name, labeltoken.label, token.type))
@@ -132,17 +132,17 @@ open class GraphDiagramParser {
                                     idx += 3
                                     result.add(GraphVertex(nametoken.name, labeltoken.name, token.type))
                                 } else {
-                                    throw GraphSyntaxException("Syntax error at " + labeltoken)
+                                    throw GraphSyntaxException("Unexpected token ${labeltoken.tokenTypeName} at line ${labeltoken.lineNum}")
                                 }
                             } else {
                                 idx++   // we consumed an extra name token here
                                 result.add(GraphVertex(nametoken.name, nametoken.name, token.type))
                             }
                         } else {
-                            throw GraphSyntaxException("Syntax error at " + astoken)
+                            throw GraphSyntaxException("Unexpected token ${astoken.tokenTypeName} at line ${astoken.lineNum}")
                         }
                     } else {
-                        throw GraphSyntaxException("Syntax error at " + nametoken)
+                        throw GraphSyntaxException("Unexpected token ${nametoken.tokenTypeName} at line ${nametoken.lineNum}")
                     }
                 } else if (tokens.size > idx + 2) {
                     val nextidx = idx + 1
@@ -150,7 +150,7 @@ open class GraphDiagramParser {
                     if (nextToken is NameToken) {
                         result.add(GraphVertex(nextToken.name, nextToken.name, token.type))
                     } else {
-                        throw GraphSyntaxException("Syntax error at " + nextToken)
+                        throw GraphSyntaxException("Unexpected token ${nextToken.tokenTypeName} at line ${nextToken.lineNum}")
                     }
                     ++idx
                 } else {
@@ -171,7 +171,7 @@ open class GraphDiagramParser {
             matchUntilMismatch(tokens, this::association)
 
     private fun association(tokens: List<GraphDiagramToken>) :GraphMatchResult {
-        if (tokens.isNotEmpty() && tokens[0] == NEWLINE) {
+        if (tokens.isNotEmpty() && tokens[0] is Newline) {
             return GraphMatchResult(1, emptyList())
         }
         if (tokens.size > 2) {
@@ -189,7 +189,7 @@ open class GraphDiagramParser {
             val nameTokens = mutableListOf<NameToken>()
             while (sublist.isNotEmpty()) {
                 val token = sublist[0]
-                if (token == COMMA || token is NameToken) {
+                if (token is Comma || token is NameToken) {
                     sublist = sublist.subList(1, sublist.size)
                     totalConsumed++
                     if (token is NameToken) {
@@ -202,13 +202,13 @@ open class GraphDiagramParser {
             if (nameTokens.isEmpty()) {
                 return emptyResult
             }
-            var labelToken = LabelToken("")
-            if (sublist.size > 1 && sublist[0] == COLON && sublist[1] is LabelToken) {
+            var labelToken = LabelToken("", tokens[0].lineNum)
+            if (sublist.size > 1 && sublist[0] is Colon && sublist[1] is LabelToken) {
                 totalConsumed+=2
                 labelToken = sublist[1] as LabelToken
                 sublist = sublist.subList(2, sublist.size)
             }
-            if (sublist.isNotEmpty() && sublist[0] == NEWLINE) {
+            if (sublist.isNotEmpty() && sublist[0] is Newline) {
                 totalConsumed++ // consume the newline as well
             }
             val connectionType = connectionType(connection)
@@ -228,20 +228,20 @@ open class GraphDiagramParser {
     }
 
     private fun connectionType(connection: GraphConnectionToken): ConnectionType =
-            if (connection == DOTS || connection == DASHES) ConnectionType.UNDIRECTED else ConnectionType.DIRECTIONAL
+            if (connection is Dots || connection is Dashes) ConnectionType.UNDIRECTED else ConnectionType.DIRECTIONAL
 
     private fun connectionStyle(connection: GraphConnectionToken) : ConnectionStyle {
-        if (connection == BACKWARDX || connection == FORWARDX) {
+        if (connection is BackwardX || connection is ForwardX) {
             return ConnectionStyle.FAILURE
         }
-        if (connection == DOTS) {
+        if (connection is Dots) {
             return ConnectionStyle.DOTS
         }
         return ConnectionStyle.NORMAL
     }
 
     private fun isReverse(connection: GraphConnectionToken) : Boolean =
-            connection == BACKWARDX || connection == BACKWARD
+            connection is BackwardX || connection is Backward
 
     /**
      * Technically this breaks the grammar definition, but we do it in the name of user fr

@@ -22,7 +22,7 @@ class GraphDiagramLexerTest : Spek ({
             nameToken as NameToken
             assertEquals("Name does not match", "S", nameToken.name)
             val asToken = result[2]
-            assertTrue("As token does not match", asToken == AS)
+            assertTrue("As token does not match", asToken is As)
             val actualNameToken = result[3]
             assertTrue("Name token type does not match", actualNameToken is NameToken )
             actualNameToken as NameToken
@@ -66,7 +66,7 @@ class GraphDiagramLexerTest : Spek ({
             assertTrue("Name token does not match", nameToken is NameToken)
             nameToken as NameToken
             assertEquals("Name does not match", "Joe", nameToken.name)
-            assertTrue("Newline token mismatch", result[2] == NEWLINE)
+            assertTrue("Newline token mismatch", result[2] is Newline)
 
             val secondVertexToken = result[3]
             assertTrue("Participant token type does not match", secondVertexToken is VertexTypeToken)
@@ -200,7 +200,7 @@ class GraphDiagramLexerTest : Spek ({
             val secondNameToken = result[2]
             assertTrue("Participant token type does not match", nameToken is NameToken)
             assertTrue("Name token does not match", secondNameToken is NameToken)
-            assertTrue("Connection token does not match" , connectionToken == FORWARD)
+            assertTrue("Connection token does not match" , connectionToken is Forward)
             nameToken as NameToken
             secondNameToken as NameToken
             assertEquals("Participant type does not match", "Smith", nameToken.name)
@@ -216,7 +216,7 @@ class GraphDiagramLexerTest : Spek ({
             val secondNameToken = result[2]
             assertTrue("Participant token type does not match", nameToken is NameToken)
             assertTrue("Name token does not match", secondNameToken is NameToken)
-            assertTrue("Connection token does not match" , connectionToken == FORWARDX)
+            assertTrue("Connection token does not match" , connectionToken is ForwardX)
             nameToken as NameToken
             secondNameToken as NameToken
             assertEquals("Participant type does not match", "Smith", nameToken.name)
@@ -233,7 +233,7 @@ class GraphDiagramLexerTest : Spek ({
             val secondNameToken = result[2]
             assertTrue("Participant token type does not match", nameToken is NameToken)
             assertTrue("Name token does not match", secondNameToken is NameToken)
-            assertTrue("Connection token does not match" , connectionToken == BACKWARD)
+            assertTrue("Connection token does not match" , connectionToken is Backward)
             nameToken as NameToken
             secondNameToken as NameToken
             assertEquals("Participant type does not match", "Smith", nameToken.name)
@@ -249,7 +249,7 @@ class GraphDiagramLexerTest : Spek ({
             val secondNameToken = result[2]
             assertTrue("Participant token type does not match", nameToken is NameToken)
             assertTrue("Name token does not match", secondNameToken is NameToken)
-            assertTrue("Connection token does not match" , connectionToken == DASHES)
+            assertTrue("Connection token does not match" , connectionToken is Dashes)
             nameToken as NameToken
             secondNameToken as NameToken
             assertEquals("Participant type does not match", "Smith", nameToken.name)
@@ -265,7 +265,7 @@ class GraphDiagramLexerTest : Spek ({
             val secondNameToken = result[2]
             assertTrue("Participant token type does not match", nameToken is NameToken)
             assertTrue("Name token does not match", secondNameToken is NameToken)
-            assertTrue("Connection token does not match" , connectionToken == DOTS)
+            assertTrue("Connection token does not match" , connectionToken is Dots)
             nameToken as NameToken
             secondNameToken as NameToken
             assertEquals("Participant type does not match", "Smith", nameToken.name)

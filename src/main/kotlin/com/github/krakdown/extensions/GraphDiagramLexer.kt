@@ -11,9 +11,10 @@ import com.github.krakdown.extensions.GraphVertexType.*
 object GraphDiagramLexer {
 
     fun process(input: String) : List<GraphDiagramToken> {
+        var lineNumber = 1
         var i = 0
         val result = mutableListOf<GraphDiagramToken>()
-        val lambdas : List<(Int,String) -> LexicalMatch> = listOf(
+        val lambdas : List<(Int,String, Int) -> LexicalMatch> = listOf(
                 this::participant,
                 this::database,
                 this::queue,
@@ -43,16 +44,19 @@ object GraphDiagramLexer {
         while (i < input.length) {
 
             // FIXME: the map here should be lazy in order for it to be performant
-            val lambdaResult = lambdas.map { it(i, input) }.first { it.chars > 0 }
+            val lambdaResult = lambdas.map { it(i, input, lineNumber) }.first { it.chars > 0 }
             i += lambdaResult.chars
-            if (lambdaResult.token != SPACE) {  // throw spaces away right here instead of letting the parser having to deal with them
+            if (lambdaResult.token !is Space) {  // throw spaces away right here instead of letting the parser having to deal with them
                 result.add(lambdaResult.token)
+            }
+            if (lambdaResult.token is Newline) {
+                lineNumber++
             }
         }
         return result
     }
 
-    private fun name(startIdx: Int, input: String): LexicalMatch {
+    private fun name(startIdx: Int, input: String, lineNumber: Int): LexicalMatch {
         return if(input[startIdx] != ' ') {
             var chars = 0
             var contents = ""
@@ -63,13 +67,13 @@ object GraphDiagramLexer {
                 contents += input[idx]
                 chars++
             }
-            return LexicalMatch(chars, NameToken(contents))
+            return LexicalMatch(chars, NameToken(contents, lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun label(index: Int, input: String): LexicalMatch {
+    private fun label(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if(input[index] == '"') {
             var chars = 0
             var count = 0
@@ -85,62 +89,62 @@ object GraphDiagramLexer {
                     break
                 }
             }
-            return LexicalMatch(chars, LabelToken(contents))
+            return LexicalMatch(chars, LabelToken(contents, lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun decision(index: Int, input: String): LexicalMatch {
-        return match(index, input, "decision", VertexTypeToken(DECISION))
+    private fun decision(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "decision", VertexTypeToken(DECISION, lineNumber))
     }
 
-    private fun terminal(index: Int, input: String): LexicalMatch {
-        return match(index, input, "terminal", VertexTypeToken(TERMINAL))
+    private fun terminal(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "terminal", VertexTypeToken(TERMINAL, lineNumber))
     }
 
-    private fun swimlane(index: Int, input: String): LexicalMatch {
-        return match(index, input, "swimlane", VertexTypeToken(SWIMLANE))
+    private fun swimlane(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "swimlane", VertexTypeToken(SWIMLANE, lineNumber))
     }
 
-    private fun connector(index: Int, input: String): LexicalMatch {
-        return match(index, input, "connector", VertexTypeToken(CONNECTOR))
+    private fun connector(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "connector", VertexTypeToken(CONNECTOR, lineNumber))
     }
 
-    private fun space(index: Int, input: String): LexicalMatch {
+    private fun space(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if(input[index] == ' ') {
-        LexicalMatch(1, SPACE)
+        LexicalMatch(1, Space(lineNumber))
     } else {
         EMPTY_LEXICAL_RESULT
     }
     }
 
-    private fun io(index: Int, input: String): LexicalMatch {
-        return match(index, input, "io", VertexTypeToken(IO))
+    private fun io(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "io", VertexTypeToken(IO, lineNumber))
     }
 
-    private fun participant(index: Int, input: String): LexicalMatch {
-        return match(index, input, "participant", VertexTypeToken(PARTICIPANT))
+    private fun participant(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "participant", VertexTypeToken(PARTICIPANT, lineNumber))
     }
 
-    private fun predefprocess(index: Int, input: String): LexicalMatch {
-        return match(index, input, "predefprocess", VertexTypeToken(PREDEFPROCESS))
+    private fun predefprocess(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "predefprocess", VertexTypeToken(PREDEFPROCESS,lineNumber))
     }
 
-    private fun process(index: Int, input: String): LexicalMatch {
-        return match(index, input, "process", VertexTypeToken(PROCESS))
+    private fun process(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "process", VertexTypeToken(PROCESS,lineNumber))
     }
 
-    private fun queue(index: Int, input: String): LexicalMatch {
-        return match(index, input, "queue", VertexTypeToken(QUEUE))
+    private fun queue(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "queue", VertexTypeToken(QUEUE,lineNumber))
     }
 
-    private fun interfacetoken(index: Int, input: String): LexicalMatch {
-        return match(index, input, "interface", VertexTypeToken(INTERFACE))
+    private fun interfacetoken(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "interface", VertexTypeToken(INTERFACE,lineNumber))
     }
 
-    private fun database(index: Int, input: String): LexicalMatch {
-        return match(index, input, "database", VertexTypeToken(DATABASE))
+    private fun database(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "database", VertexTypeToken(DATABASE,lineNumber))
     }
 
     private fun match(index: Int, input: String, match:String, token: GraphDiagramToken): LexicalMatch {
@@ -157,33 +161,33 @@ object GraphDiagramLexer {
     }
 
 
-    private fun newLine(index: Int, input: String): LexicalMatch {
+    private fun newLine(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if(input[index] == '\n') {
-            LexicalMatch(1, NEWLINE)
+            LexicalMatch(1, Newline(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun cardinalityN(index: Int, input: String): LexicalMatch {
-        return match(index, input, "for N", CARDINALITYN)
+    private fun cardinalityN(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "for N", CardinalityN(lineNumber))
     }
 
 
-    private fun cardinality1(index: Int, input: String): LexicalMatch {
-        return match(index, input, "for 1", CARDINALITY1)
+    private fun cardinality1(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "for 1", Cardinality1(lineNumber))
     }
 
 
-    private fun cardinality0(index: Int, input: String): LexicalMatch {
-        return match(index, input, "for 0", CARDINALITY0)
+    private fun cardinality0(index: Int, input: String, lineNumber: Int): LexicalMatch {
+        return match(index, input, "for 0", Cardinality0(lineNumber))
     }
 
-    private fun astoken(index: Int, input: String): LexicalMatch {
+    private fun astoken(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2)) {
             val substring = input.substring(index)
             if (substring.startsWith("as") || substring.startsWith("AS")) {
-                LexicalMatch(2, AS)
+                LexicalMatch(2, As(lineNumber))
             } else {
                 EMPTY_LEXICAL_RESULT
             }
@@ -192,57 +196,57 @@ object GraphDiagramLexer {
         }
     }
 
-    private fun dots(index: Int, input: String): LexicalMatch {
+    private fun dots(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2) && input[index] == '.' && input[index+1] == '.') {
-            LexicalMatch(2, DOTS)
+            LexicalMatch(2, Dots(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun dashes(index: Int, input: String): LexicalMatch {
+    private fun dashes(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2) && input[index] == '-' && input[index+1] == '-') {
-            LexicalMatch(2, DASHES)
+            LexicalMatch(2, Dashes(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun colon(index: Int, input: String): LexicalMatch {
+    private fun colon(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if(input[index] == ':') {
-            LexicalMatch(1, COLON)
+            LexicalMatch(1, Colon(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun forward(index: Int, input: String): LexicalMatch {
+    private fun forward(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2) && input[index] == '-' && input[index+1] == '>') {
-            LexicalMatch(2, FORWARD)
+            LexicalMatch(2, Forward(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun forwardx(index: Int, input: String): LexicalMatch {
+    private fun forwardx(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2) && input[index] == '-' && input[index+1] == 'x') {
-            LexicalMatch(2, FORWARDX)
+            LexicalMatch(2, ForwardX(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun backward(index: Int, input: String): LexicalMatch {
+    private fun backward(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2) && input[index] == '<' && input[index+1] == '-') {
-            LexicalMatch(2, BACKWARD)
+            LexicalMatch(2, Backward(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
     }
 
-    private fun backwardx(index: Int, input: String): LexicalMatch {
+    private fun backwardx(index: Int, input: String, lineNumber: Int): LexicalMatch {
         return if((input.length > index+2) && input[index] == 'x' && input[index+1] == '-') {
-            LexicalMatch(2, BACKWARDX)
+            LexicalMatch(2, BackwardX(lineNumber))
         } else {
             EMPTY_LEXICAL_RESULT
         }
@@ -250,7 +254,7 @@ object GraphDiagramLexer {
 
     private data class LexicalMatch(val chars:Int, val token: GraphDiagramToken)
 
-    private object NullToken : GraphDiagramToken()
+    private object NullToken : GraphDiagramToken("Null", -1)
 
     private val EMPTY_LEXICAL_RESULT = LexicalMatch(0, NullToken)
 }
