@@ -5,7 +5,7 @@ import com.github.krakdown.NodeVisitor
 import com.github.krakdown.block.node.*
 import com.github.krakdown.inline.AnchorNode
 import com.github.krakdown.inline.BoldStyleNode
-import com.github.krakdown.inline.EmStyleNode
+import com.github.krakdown.inline.EmphasisNode
 import com.github.krakdown.inline.PreformattedStyleNode
 import org.w3c.dom.Document
 
@@ -48,7 +48,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         if (node is BoldStyleNode) {
             return acceptBoldStyleNode(node)
         }
-        if (node is EmStyleNode) {
+        if (node is EmphasisNode) {
             return acceptEmStyleNode(node)
         }
         if (node is PreformattedStyleNode) {
@@ -115,7 +115,7 @@ open class AttachingHtmlVisitor(val document:Document) : NodeVisitor<org.w3c.dom
         return createElementWithChildren(node, "code") { node.nodes }
     }
 
-    private fun acceptEmStyleNode(node: EmStyleNode): org.w3c.dom.Node {
+    private fun acceptEmStyleNode(node: EmphasisNode): org.w3c.dom.Node {
         return createElementWithChildren(node, "em") { node.nodes }
     }
 

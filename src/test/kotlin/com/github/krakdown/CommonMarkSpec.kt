@@ -1,7 +1,6 @@
 package com.github.krakdown
 
 import com.github.krakdown.inline.InlineLexer
-import com.github.krakdown.inline.InlineTextTokenizer
 import com.github.krakdown.inline.LabeledLinkToken
 import com.github.krakdown.visitors.InlineHtmlVisitor
 import org.jetbrains.spek.api.Spek
@@ -44,7 +43,7 @@ class CommonMarkSpec : Spek({
     given("a pre-defined link") {
         val link = "[some label](//someurl)"
         it("inline tokenizer should tokenize the link") {
-            val result = InlineLexer().tokenize(link)
+            val result = InlineLexer().tokenize(link, ParsingContext(mutableListOf()))
             assertEquals(1, result.size, "expecting exactly one anchor token")
             assertTrue(result[0] is LabeledLinkToken)
             assertEquals("some label", (result[0] as LabeledLinkToken).label, "labels should match")

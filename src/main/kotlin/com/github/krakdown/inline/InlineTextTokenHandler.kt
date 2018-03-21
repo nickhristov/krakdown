@@ -1,10 +1,11 @@
 package com.github.krakdown.inline
 
+import com.github.krakdown.ParsingContext
 import com.github.krakdown.block.node.TextNode
 
 
 class InlineTextTokenHandler : InlineTokenHandler {
-    override fun handleToken(parser: InlineParser, index: Int, tokens: List<InlineToken>, result: MutableList<InlineNode>): Int {
+    override fun handleToken(parser: InlineParser, index: Int, tokens: List<InlineToken>, result: MutableList<InlineNode>, context: ParsingContext): Int {
         val token = tokens[index]
         if (token is InlineTextToken) {
             result.add(TextNode(token.characters.toString()))

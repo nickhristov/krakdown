@@ -10,7 +10,7 @@ class EmphasisTokenHandler : ForwardSeekingHandler() {
         if (emphasisToken.count > 1) {
             return BoldStyleNode(embeddedNodes)
         } else {
-            return EmStyleNode(embeddedNodes)
+            return EmphasisNode(embeddedNodes)
         }
     }
 

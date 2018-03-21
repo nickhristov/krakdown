@@ -1,13 +1,15 @@
 package com.github.krakdown.inline
 
+import com.github.krakdown.ParsingContext
 import com.github.krakdown.block.node.TextNode
 
 class CodeInlineTokenHandler : ForwardSeekingHandler() {
     val literalParser = InlineParser(
             InlineLexer(emptyList()), listOf(AnythingAsInlineHandler())
     )
-    override fun parseSubNodes(parser: InlineParser, tokens: List<InlineToken>) : List<InlineNode> {
-        return literalParser.parse(trimSpaces(tokens))
+
+    override fun parseSubNodes(parser: InlineParser, tokens: List<InlineToken>, context: ParsingContext) : List<InlineNode> {
+        return literalParser.parse(trimSpaces(tokens), context)
     }
 
     private fun trimSpaces(tokens: List<InlineToken>): List<InlineToken> {
@@ -45,7 +47,7 @@ class CodeInlineTokenHandler : ForwardSeekingHandler() {
 }
 
 class AnythingAsInlineHandler : InlineTokenHandler {
-    override fun handleToken(parser: InlineParser, index: Int, tokens: List<InlineToken>, result: MutableList<InlineNode>): Int {
+    override fun handleToken(parser: InlineParser, index: Int, tokens: List<InlineToken>, result: MutableList<InlineNode>, context: ParsingContext): Int {
         for(idx in index..(tokens.size-1)) {
             val token = tokens[idx]
             result.add(TextNode(token.toString()))

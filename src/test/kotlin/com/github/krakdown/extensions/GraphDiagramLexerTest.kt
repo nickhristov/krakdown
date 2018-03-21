@@ -4,7 +4,6 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.junit.Assert.*
-import javax.naming.Name
 
 class GraphDiagramLexerTest : Spek ({
 

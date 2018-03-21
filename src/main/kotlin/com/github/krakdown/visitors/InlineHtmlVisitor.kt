@@ -5,7 +5,7 @@ import com.github.krakdown.NodeVisitor
 import com.github.krakdown.block.node.*
 import com.github.krakdown.inline.AnchorNode
 import com.github.krakdown.inline.BoldStyleNode
-import com.github.krakdown.inline.EmStyleNode
+import com.github.krakdown.inline.EmphasisNode
 import com.github.krakdown.inline.PreformattedStyleNode
 
 open class InlineHtmlVisitor : NodeVisitor<String> {
@@ -41,7 +41,7 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
         if (node is BoldStyleNode) {
             return acceptBoldStyleNode(node)
         }
-        if (node is EmStyleNode) {
+        if (node is EmphasisNode) {
             return acceptEmStyleNode(node)
         }
         if (node is PreformattedStyleNode) {
@@ -107,7 +107,7 @@ open class InlineHtmlVisitor : NodeVisitor<String> {
         return "<code>$content</code>"
     }
 
-    fun acceptEmStyleNode(node: EmStyleNode): String {
+    fun acceptEmStyleNode(node: EmphasisNode): String {
         val content = node.nodes.joinToString("", transform = this::accept)
         return "<em>$content</em>"
     }
